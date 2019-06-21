@@ -1,0 +1,46 @@
+
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+#directive @isAuthenticated on QUERY | FIELD | MUTATION
+#directive @hasRole(roles: [String]) on QUERY | FIELD | MUTATION
+#directive @isOwner(type: String) on QUERY | MUTATION
+#directive @isOwnerOrHasRole(type: String, roles: [String]) on QUERY | MUTATION
+
+
+
+type StripeUser {
+  id: ID! @unique @id
+  email: String!
+  firstName: String!
+  lastName: String!
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
+}
+
+type Post {
+  id: ID! @unique @id
+  isPublished: Boolean!
+  title: String!
+  text: String!
+  testString: String
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
+  user: User @relation(name: "UserPosts")
+}
+
+type User {
+  id: ID! @unique @id
+  email: String! @unique
+  role: Role @default(value: CUSTOMER)
+  name: String!
+  avatar: String
+  auth0id: String! @unique
+  identity: String
+  updatedAt: DateTime! @updatedAt
+  createdAt: DateTime! @createdAt
+  posts: [Post!]! @relation(name: "UserPosts")
+}

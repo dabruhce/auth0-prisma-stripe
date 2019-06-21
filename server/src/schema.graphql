@@ -1,0 +1,39 @@
+# import Query.users, Post, StripeUser, stripeUser from "./generated/prisma.graphql"
+
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+directive @isAuthenticated on QUERY | FIELD | MUTATION
+directive @hasRole(roles: [String]) on QUERY | FIELD | MUTATION
+directive @isOwner(type: String) on QUERY | MUTATION
+directive @isOwnerOrHasRole(type: String, roles: [String]) on QUERY | MUTATION
+
+type Query {
+#  stripeUser: [StripeUser!]!
+  feed: [Post!]!
+  drafts: [Post!]! @isAuthenticated
+  post(id: ID!): Post @isOwnerOrHasRole(type: "Post", roles: ["ADMIN"])
+  me: User @isAuthenticated
+}
+
+type Mutation {
+  authenticate(idToken: String!): User
+  createStripeUser(firstName: String!, lastName: String!, email: String!): StripeUser
+  createDraft(title: String!, text: String): Post @isAuthenticated
+  deletePost(id: ID!): Post @isOwnerOrHasRole(type: "Post", roles: ["ADMIN"])
+  publish(id: ID!): Post @isOwner(type: "Post")
+}
+
+type User {
+  id: ID!
+  email: String @isOwner(type: "User")
+  role: Role
+  name: String
+  avatar: String
+  auth0id: String!
+  identity: String
+  posts: [Post!]!
+}
