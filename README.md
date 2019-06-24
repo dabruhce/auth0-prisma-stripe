@@ -31,7 +31,7 @@ AUTH0_ISSUER=https://${????}.auth0.com/
 docker-compose up -d
 yarn install
 prisma deploy
-dev start
+yarn dev
 
 ````
 
